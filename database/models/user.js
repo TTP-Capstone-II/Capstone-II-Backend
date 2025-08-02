@@ -39,3 +39,5 @@ const User = db.define('user', {
         defaultValue: false,
       },
     });
+
+    module.exports = User;

@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const db = require('../db');
 
-const thread = db.define('thread', {
+const Thread = db.define('thread', {
     title: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -24,4 +24,4 @@ const thread = db.define('thread', {
     },
 });
 
-module.exports = thread;
+module.exports = Thread;
