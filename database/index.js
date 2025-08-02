@@ -1,8 +1,8 @@
 const db = require("./db");
-const User = require("./user");
-const Thread = require("./thread");
-const Reply = require("./reply");
-const Like = require("./like");
+const User = require("./models/user");
+const Thread = require("./models/thread");
+const Reply = require("./models/reply");
+const Like = require("./models/like");
 
 // Associations
 User.hasMany(Thread, { foreignKey: "userId" }); // A user can have many threads
