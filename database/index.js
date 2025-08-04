@@ -11,6 +11,8 @@ Thread.belongsTo(User, { foreignKey: "userId" }); // A thread belongs to a user
 
 Thread.hasMany(Reply, { foreignKey: "threadId" }); // A thread can have many replies
 
+Thread.hasMany(Like, { foreignKey: "threadId" }); // A thread can have many likes
+
 Reply.belongsTo(Thread, { foreignKey: "threadId" }); // A reply belongs to a thread
 
 User.belongsToMany(Thread, {
