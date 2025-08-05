@@ -17,5 +17,25 @@ router.get('/:forumId/posts', async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch posts for this forum.' });
     }
   });
-  
+
+//Create a new post in a forum
+router.post('/:forumId/post/', async(req, res) => {
+  const { forumId } = req.params;
+  try {
+    const { title, content, userId, likes = 0 } = req.body;
+    const newPost = await Post.create({
+      title,
+      content,
+      likes,
+      userId,
+      forumId: forumId,
+    });
+
+    res.status(201).json(newPost);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error from the post new post route");
+  }
+});
+
   module.exports = router;
