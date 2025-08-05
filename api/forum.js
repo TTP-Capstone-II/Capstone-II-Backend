@@ -15,7 +15,22 @@ router.get('/:forumId/posts', async (req, res) => {
       });
       res.json(posts);
     } catch (err) {
-      console.error('Error fetching posts:', err);
+      console.error('Error fetching posts: ', err);
+      res.status(500).json({ error: 'Failed to fetch posts for this forum.' });
+    }
+  });
+
+  router.get('/:forumId/posts/:postId', async (req, res) => {
+    const { postId, forumId } = req.params;
+    console.log(`Fetching post for post ID: ${postId}`);
+    try {
+      const post = await Post.findOne({
+        where: { forumId, id: postId },
+        include: [{ model: User, attributes: ['username']}],
+      });
+      res.json(post);
+    } catch (err) {
+      console.error('Error fetching post by id: ', err);
       res.status(500).json({ error: 'Failed to fetch posts for this forum.' });
     }
   });

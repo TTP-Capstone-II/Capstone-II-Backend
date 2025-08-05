@@ -34,6 +34,12 @@ const seed = async () => {
         userId: hailia.id,
       },
       {
+        title: 'How to calculate max width?',
+        content: 'Idk bro physics is hard',
+        forumId: projectileForum.id,
+        userId: hailia.id,
+      },
+      {
         title: 'Static vs kinetic friction',
         content: 'When does static friction switch to kinetic friction? Is it instantaneous?',
         forumId: frictionForum.id,
