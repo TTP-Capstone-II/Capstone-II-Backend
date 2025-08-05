@@ -1,34 +1,33 @@
 const db = require("./db");
 const User = require("./models/user");
-const Thread = require("./models/thread");
+const Post = require("./models/post");
 const Reply = require("./models/reply");
-const Like = require("./models/like");
+const Forum = require("./models/forum");
+
 
 // Associations
-User.hasMany(Thread, { foreignKey: "userId" }); // A user can have many threads
+Forum.hasMany(Post, { foreignKey: "forumId" }); // A forum can have many posts
 
-Thread.belongsTo(User, { foreignKey: "userId" }); // A thread belongs to a user
+Post.belongsTo(Forum, { foreignKey: "forumId" }); // A post belongs to a forum
 
-Thread.hasMany(Reply, { foreignKey: "threadId" }); // A thread can have many replies
+Post.belongsTo(User, { foreignKey: "userId" }); // A post belongs to a user
 
-Reply.belongsTo(Thread, { foreignKey: "threadId" }); // A reply belongs to a thread
+Post.hasMany(Reply, { foreignKey: "postId" }); // A post can have many replies
 
-User.belongsToMany(Thread, {
-  through: Like,
-  foreignKey: "userId",
-  otherKey: "threadId",
-}); // A user can like many threads
+Reply.belongsTo(Post, { foreignKey: "postId" }); // A reply belongs to a post
 
-Thread.belongsToMany(User, {
-  through: Like,
-  foreignKey: "threadId",
-  otherKey: "userId",
-}); // A thread can be liked by many users
+Reply.belongsTo(User, { foreignKey: "userId" }); // A reply belongs to a user
+
+Reply.belongsTo(Reply, { foreignKey: "parentId", as: "parentReply" }); // A reply can have a parent reply
+
+Reply.hasMany(Reply, { foreignKey: "parentId", as: "childReplies" }); // A reply can have many child replies
+
+
 
 module.exports = {
   db,
   User,
-  Thread,
+  Post,
+  Forum,
   Reply,
-  Like,
 };

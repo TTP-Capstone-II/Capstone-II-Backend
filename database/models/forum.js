@@ -1,17 +1,9 @@
 const { DataTypes } = require('sequelize');
 const db = require('../db');
 
-const Thread = db.define('thread', {
-    title: {
+const Forum = db.define('forum', {
+    name: {
         type: DataTypes.STRING,
-        allowNull: false,
-    },
-    content: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    },
-    userId: {
-        type: DataTypes.INTEGER,
         allowNull: false,
     },
     createdAt: {
@@ -24,4 +16,4 @@ const Thread = db.define('thread', {
     },
 });
 
-module.exports = Thread;
+module.exports = Forum;
