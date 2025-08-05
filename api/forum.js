@@ -56,7 +56,6 @@ router.post('/:forumId/post/', async(req, res) => {
 });
 
   // Get all forums
-
   router.get('/', async (req, res) => {
     try {
       const forums = await Forum.findAll();
@@ -66,5 +65,24 @@ router.post('/:forumId/post/', async(req, res) => {
       res.status(500).json({ error: 'Failed to fetch forums.' });
     }
   });
+
+
+// Get all replies from a forum post
+router.get('/:forumId/posts/:postId/replies', async (req, res) => {
+  const { forumId } = req.params;
+  const { postId } = req.params;
+
+  try { 
+    const replies = await Reply.findAll({
+        where: { forumId: forumId, postId: postId },
+        include: [{ model: User, attributes: ['username'] }],
+        order: [['createdAt', 'DESC']],
+      });
+      res.json(replies);
+  } catch (err) {
+    console.error('Error fetching replies:', err);
+      res.status(500).json({ error: 'Failed to fetch replies for this forum.' });
+  }
+});
   
   module.exports = router;
