@@ -1,22 +1,22 @@
 const { DataTypes } = require('sequelize');
 const db = require('../db');
 
-const Reply = db.define('reply', {
+const Post = db.define('post', {
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     content: {
         type: DataTypes.TEXT,
-        allowNull: false,
-    },
-    postId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    userId: {
-        type: DataTypes.INTEGER,
         allowNull: false,
     },
     likes: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
+    },
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
     },
     createdAt: {
         type: DataTypes.DATE,
@@ -28,4 +28,4 @@ const Reply = db.define('reply', {
     },
 });
 
-module.exports = Reply;
+module.exports = Post;
