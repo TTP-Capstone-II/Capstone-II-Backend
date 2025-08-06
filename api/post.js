@@ -45,7 +45,7 @@ router.delete("/:postId", async (req, res) => {
 });
 
 //POST a reply
-router.post("/:postId/reply/", async (req, res) => {
+router.post("/:postId/reply", async (req, res) => {
     const {postId} = req.params;
     try {
         const { content, userId, postId, likes = 0 } = req.body;
