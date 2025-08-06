@@ -44,8 +44,26 @@ router.delete("/:postId", async (req, res) => {
     }
 });
 
+//POST a reply
+router.post("/:postId/reply", async (req, res) => {
+    const {postId} = req.params;
+    try {
+        const { content, userId, postId, likes = 0 } = req.body;
+        const newReply = await Reply.create({
+            content,
+            userId, 
+            postId: postId,
+            likes,
+        });
+
+        res.status(201).json(newReply);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Error from the post new reply route");
+    }
+})
 // Get all replies from a post
-router.get('/:postId/replies', async (req, res) => {
+router.get('/:postId/reply', async (req, res) => {
   const { postId } = req.params;
 
   try { 
