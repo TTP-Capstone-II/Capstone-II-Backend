@@ -63,7 +63,7 @@ router.post("/:postId/reply/", async (req, res) => {
     }
 })
 // Get all replies from a post
-router.get('/:postId/replies', async (req, res) => {
+router.get('/:postId/reply', async (req, res) => {
   const { postId } = req.params;
 
   try { 
