@@ -44,4 +44,21 @@ router.delete("/:postId", async (req, res) => {
     }
 });
 
+// Get all replies from a post
+router.get('/:postId/replies', async (req, res) => {
+  const { postId } = req.params;
+
+  try { 
+    const replies = await Reply.findAll({
+        where: { postId },
+        include: [{ model: User, attributes: ['username'] }],
+        order: [['createdAt', 'DESC']],
+      });
+      res.json(replies);
+  } catch (err) {
+    console.error('Error fetching replies:', err);
+    res.status(500).json({ error: 'Failed to fetch replies for this post.' });
+  }
+});
+
 module.exports = router;
