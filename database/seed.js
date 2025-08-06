@@ -3,6 +3,8 @@ const { User } = require("./index");
 const { Post } = require("./index");
 const { Reply } = require("./index");
 const { Forum } = require("./index");
+const { Postlikes } = require("./index");
+const { Replylikes } = require("./index");
 
 const seed = async () => {
   try {
@@ -144,6 +146,29 @@ const seed = async () => {
         },
       ]);
 
+    //Postlikes
+    const postlikes = await Postlikes.bulkCreate([
+      {
+        postId: post1.id,
+        userId: alex.id,
+      },
+      {
+        postId: post2.id,
+        userId: hailia.id,
+      },
+    ]);
+
+    //Replylikes
+    const replylikes = await Replylikes.bulkCreate([
+      {
+        replyId: 1,
+        userId: alex.id,
+      },
+      {
+        replyId: 2,
+        userId: hailia.id,
+      }
+    ]);
     // Create more seed data here once you've created your models
     // Seed files are a great way to test your database schema!
 
