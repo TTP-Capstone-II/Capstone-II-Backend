@@ -24,7 +24,17 @@ const initSocketServer = (server) => {
         console.log(`🔗 User ${socket.id} disconnected from sockets`);
       });
 
-      // Define event handlers here...
+      // User joins a room
+      socket.on("join-room", (roomId) => {
+        socket.join(roomId);
+        console.log(`📥 User ${socket.id} joined room ${roomId}`);
+      });
+
+      // Receive drawing data and broadcast to other clients in the room
+      socket.on("draw", (data) => {
+        // Broadcast to everyone else in the room except sender
+        socket.to(data.roomId).emit("draw", data);
+      });
     });
   } catch (error) {
     console.error("❌ Error initializing socket server:");
