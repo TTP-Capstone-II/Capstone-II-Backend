@@ -5,6 +5,7 @@ const { Reply } = require("./index");
 const { Forum } = require("./index");
 const { Postlikes } = require("./index");
 const { Replylikes } = require("./index");
+const { Simulation } = require("./index");
 
 const seed = async () => {
   try {
@@ -169,6 +170,31 @@ const seed = async () => {
         userId: hailia.id,
       }
     ]);
+    
+    //Simulation
+    const simulation = await Simulation.bulkCreate([
+      {
+        userId: darrel.id,
+        forumId: inertiaForum.id,
+        storedValues: "This is just dummy data lol"
+      },
+      {
+        userId: darrel.id,
+        forumId: inertiaForum.id,
+        storedValues: "This is just more dummy data lol"
+      },
+      {
+        userId: darrel.id,
+        forumId: freeFallForum.id,
+        storedValues: "Still more dummy data lol"
+      },
+      {
+        userId: darrel.id,
+        forumId: projectileForum.id,
+        storedValues: "This is just dummy data lololololololol"
+      },
+    ]);
+
     // Create more seed data here once you've created your models
     // Seed files are a great way to test your database schema!
 
