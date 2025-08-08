@@ -93,7 +93,7 @@ router.patch("/:simId", async (req, res) => {
   }
 });
 
-// DELETE - delete simulation
+// DELETE - delete existing simulation
 router.delete("/:simId", async (req, res) => {
   try {
     const simulation = await Simulation.findByPk(req.params.simId);
