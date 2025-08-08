@@ -46,7 +46,7 @@ const initSocketServer = (server) => {
         if (!roomDrawings[roomId]) roomDrawings[roomId] = [];
         roomDrawings[roomId].push(line);
 
-        socket.to(roomId).emit("draw", line);
+        socket.in(roomId).emit("draw", line);
       });
     });
   } catch (error) {
