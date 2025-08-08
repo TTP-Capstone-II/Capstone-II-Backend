@@ -5,8 +5,17 @@ const Reply = require("./models/reply");
 const Forum = require("./models/forum");
 const Postlikes = require("./models/postlikes");
 const Replylikes = require("./models/replylikes");
+const Simulation = require("./models/simulation");
 
 // Associations
+Simulation.belongsTo(User, { foreignKey: "userId" }); //A simulation belongs to a user
+
+User.hasMany(Simulation, { foreignKey: "userId" }); //A user can have many simulations
+
+Simulation.belongsTo(Forum, { foreignKey: "forumId"}); //Simulations pertain to one topic(forum is considered topic)
+
+Forum.hasMany(Simulation, { foreignKey: "forumId"}); //Same as above
+
 Forum.hasMany(Post, { foreignKey: "forumId" }); // A forum can have many posts
 
 Post.belongsTo(Forum, { foreignKey: "forumId" }); // A post belongs to a forum
@@ -59,4 +68,5 @@ module.exports = {
   Reply,
   Postlikes,
   Replylikes,
+  Simulation,
 };
