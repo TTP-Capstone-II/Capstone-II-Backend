@@ -49,18 +49,17 @@ const initSocketServer = (server) => {
         socket.in(roomId).emit("draw", line);
       });
 
-      // Creating the voice call
-      socket.on("voice-offer", ({offer}) => {
-        io.emit("voice-offer", {offer});
-      })
+socket.on("voice-offer", ({ offer, to }) => {
+    io.to(to).emit("voice-offer", { offer, from: socket.id });
+  });
 
-      socket.on("voice-answer", ({answer}) => {
-        io.emit("voice-answer", {answer});
-      })
+  socket.on("voice-answer", ({ answer, to }) => {
+    io.to(to).emit("voice-answer", { answer, from: socket.id });
+  });
 
-      socket.on("new-ice-candidate", ({candidate}) => {
-        io.emit("new-ice-candidate", {candidate});
-      })
+  socket.on("new-ice-candidate", ({ candidate, to }) => {
+    io.to(to).emit("new-ice-candidate", { candidate, from: socket.id });
+  });
     });
   } catch (error) {
     console.error("❌ Error initializing socket server:");
