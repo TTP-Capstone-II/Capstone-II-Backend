@@ -61,6 +61,15 @@ const initSocketServer = (server) => {
       socket.on("new-ice-candidate", ({roomId, candidate}) => {
         socket.to(roomId).emit("new-ice-candidate", {roomId, candidate});
       })
+
+      socket.on("voice-join", ({roomId}) => {
+        console.log(`📥 User ${socket.id} joined voice room ${roomId}`);
+      });
+
+      socket.on("voice-leave", ({roomId}) => {
+        console.log(`📤 User ${socket.id} left voice room ${roomId}`);
+      });
+      
     });
   } catch (error) {
     console.error("❌ Error initializing socket server:");
