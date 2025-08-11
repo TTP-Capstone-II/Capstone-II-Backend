@@ -30,7 +30,7 @@ const initSocketServer = (server) => {
       socket.on("join-room", ({ roomId, username }) => {
         socket.join(roomId);
         console.log(`📥 User ${socket.id} joined room ${roomId}`);
-        socket.to(roomId).emit("user-joined", username);
+        socket.to(roomId).emit("user-joined", {id: socket.id, username});
 
         // Send existing drawings to new client
         if (roomDrawings[roomId]) {
