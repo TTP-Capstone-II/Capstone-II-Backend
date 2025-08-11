@@ -50,16 +50,16 @@ const initSocketServer = (server) => {
       });
 
       // Creating the voice call
-      socket.on("voice-offer", ({offer}) => {
-        io.emit("voice-offer", {offer});
+      socket.on("voice-offer", ({roomId, offer}) => {
+        socket.to(roomId).emit("voice-offer", {roomId, offer});
       })
 
-      socket.on("voice-answer", ({answer}) => {
-        io.emit("voice-answer", {answer});
+      socket.on("voice-answer", ({roomId, answer}) => {
+        socket.to(roomId).emit("voice-answer", {roomId, answer});
       })
 
-      socket.on("new-ice-candidate", ({candidate}) => {
-        io.emit("new-ice-candidate", {candidate});
+      socket.on("new-ice-candidate", ({roomId, candidate}) => {
+        socket.to(roomId).emit("new-ice-candidate", {roomId, candidate});
       })
     });
   } catch (error) {
