@@ -61,6 +61,15 @@ socket.on("voice-offer", ({ offer, to }) => {
   socket.on("new-ice-candidate", ({ candidate, to }) => {
     io.to(to).emit("new-ice-candidate", { candidate, from: socket.id });
   });
+
+   socket.on("voice-join", ({roomId}) => {
+        console.log(`📥 User ${socket.id} joined voice room ${roomId}`);
+      });
+
+    socket.on("voice-leave", ({roomId}) => {
+        console.log(`📤 User ${socket.id} left voice room ${roomId}`);
+      });
+      
     });
   } catch (error) {
     console.error("❌ Error initializing socket server:");
