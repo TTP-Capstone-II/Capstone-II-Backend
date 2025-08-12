@@ -24,7 +24,57 @@ const initSocketServer = (server) => {
         console.log(`🔗 User ${socket.id} disconnected from sockets`);
       });
 
-      // Define event handlers here...
+      // User joins a room
+      socket.on("join-room", ({ roomId, username }) => {
+        socket.join(roomId);
+        console.log(`📥 User ${socket.id} joined room ${roomId}`);
+        socket.to(roomId).emit("user-joined", username);
+
+        // Send existing drawings to new client
+        if (roomDrawings[roomId]) {
+          roomDrawings[roomId].forEach((line) => {
+            socket.emit("draw", line);
+          });
+        }
+      });
+
+      // Receive drawing data and broadcast to other clients in the room
+      socket.on("draw", ({ roomId, line }) => {
+        console.log(`Draw in room ${roomId}`);
+        if (!roomDrawings[roomId]) roomDrawings[roomId] = [];
+        roomDrawings[roomId].push(line);
+
+        socket.in(roomId).emit("draw", line);
+      });
+
+      socket.on("clear-canvas", (roomId) => {
+        console.log(`Clearing canvas in room ${roomId}`);
+        roomDrawings[roomId] = [];
+        socket.in(roomId).emit("clear-canvas");
+      }
+      );
+
+      // Creating the voice call
+      socket.on("voice-offer", ({roomId, offer}) => {
+        socket.to(roomId).emit("voice-offer", {roomId, offer});
+      })
+
+      socket.on("voice-answer", ({roomId, answer}) => {
+        socket.to(roomId).emit("voice-answer", {roomId, answer});
+      })
+
+      socket.on("new-ice-candidate", ({roomId, candidate}) => {
+        socket.to(roomId).emit("new-ice-candidate", {roomId, candidate});
+      })
+
+      socket.on("voice-join", ({roomId}) => {
+        console.log(`📥 User ${socket.id} joined voice room ${roomId}`);
+      });
+
+      socket.on("voice-leave", ({roomId}) => {
+        console.log(`📤 User ${socket.id} left voice room ${roomId}`);
+      });
+
     });
   } catch (error) {
     console.error("❌ Error initializing socket server:");
