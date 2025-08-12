@@ -48,6 +48,28 @@ const initSocketServer = (server) => {
 
         socket.in(roomId).emit("draw", line);
       });
+
+      // Creating the voice call
+      socket.on("voice-offer", ({roomId, offer}) => {
+        socket.to(roomId).emit("voice-offer", {roomId, offer});
+      })
+
+      socket.on("voice-answer", ({roomId, answer}) => {
+        socket.to(roomId).emit("voice-answer", {roomId, answer});
+      })
+
+      socket.on("new-ice-candidate", ({roomId, candidate}) => {
+        socket.to(roomId).emit("new-ice-candidate", {roomId, candidate});
+      })
+
+      socket.on("voice-join", ({roomId}) => {
+        console.log(`📥 User ${socket.id} joined voice room ${roomId}`);
+      });
+
+      socket.on("voice-leave", ({roomId}) => {
+        console.log(`📤 User ${socket.id} left voice room ${roomId}`);
+      });
+      
     });
   } catch (error) {
     console.error("❌ Error initializing socket server:");
