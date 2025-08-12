@@ -7,10 +7,11 @@ const corsOptions =
   process.env.NODE_ENV === "production"
     ? {
         origin: FRONTEND_URL,
+        methods: ["GET", "POST"],
         credentials: true,
       }
     : {
-        cors: "*",
+        origin: "*",
       };
 
 const initSocketServer = (server) => {
@@ -30,7 +31,7 @@ const initSocketServer = (server) => {
       socket.on("join-room", ({ roomId, username }) => {
         socket.join(roomId);
         console.log(`📥 User ${socket.id} joined room ${roomId}`);
-        socket.to(roomId).emit("user-joined", username);
+        socket.to(roomId).emit("user-joined", {id: socket.id, username});
 
         // Send existing drawings to new client
         if (roomDrawings[roomId]) {
@@ -49,24 +50,23 @@ const initSocketServer = (server) => {
         socket.in(roomId).emit("draw", line);
       });
 
-      // Creating the voice call
-      socket.on("voice-offer", ({roomId, offer}) => {
-        socket.to(roomId).emit("voice-offer", {roomId, offer});
-      })
+socket.on("voice-offer", ({ offer, to }) => {
+    io.to(to).emit("voice-offer", { offer, from: socket.id });
+  });
 
-      socket.on("voice-answer", ({roomId, answer}) => {
-        socket.to(roomId).emit("voice-answer", {roomId, answer});
-      })
+  socket.on("voice-answer", ({ answer, to }) => {
+    io.to(to).emit("voice-answer", { answer, from: socket.id });
+  });
 
-      socket.on("new-ice-candidate", ({roomId, candidate}) => {
-        socket.to(roomId).emit("new-ice-candidate", {roomId, candidate});
-      })
+  socket.on("new-ice-candidate", ({ candidate, to }) => {
+    io.to(to).emit("new-ice-candidate", { candidate, from: socket.id });
+  });
 
-      socket.on("voice-join", ({roomId}) => {
+   socket.on("voice-join", ({roomId}) => {
         console.log(`📥 User ${socket.id} joined voice room ${roomId}`);
       });
 
-      socket.on("voice-leave", ({roomId}) => {
+    socket.on("voice-leave", ({roomId}) => {
         console.log(`📤 User ${socket.id} left voice room ${roomId}`);
       });
       
