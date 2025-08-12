@@ -10,7 +10,7 @@ const corsOptions =
         credentials: true,
       }
     : {
-        cors: "*",
+        origin: "*",
       };
 
 const initSocketServer = (server) => {
