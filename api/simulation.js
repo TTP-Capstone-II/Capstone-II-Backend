@@ -27,7 +27,7 @@ router.get("/:userId", async (req, res) => {
   try {
     const simulations = await Simulation.findAll({
       where: { userId },
-      include: [{ model: Forum, attributes: ["name"] }],
+      //include: [{ model: Forum, attributes: ["name"] }],
       order: [["createdAt", "DESC"]],
     });
 
@@ -47,11 +47,19 @@ router.get("/:userId", async (req, res) => {
 //POST create a new simulation
 router.post("/", async (req, res) => {
   try {
-    const { userId, forumId, storedValues } = req.body;
+    const { userId, forumTitle, topic, storedValues } = req.body;
+
+    console.log("Creating simulation with:", {
+      userId,
+      forumTitle,
+      topic,
+      storedValues: JSON.stringify(storedValues),
+    });
 
     const simulation = await Simulation.create({
       userId,
-      forumId,
+      forumTitle,
+      topic,
       storedValues: JSON.stringify(storedValues),
     });
 
