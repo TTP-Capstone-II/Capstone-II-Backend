@@ -7,6 +7,7 @@ const corsOptions =
   process.env.NODE_ENV === "production"
     ? {
         origin: FRONTEND_URL,
+        methods: ["GET", "POST"],
         credentials: true,
       }
     : {
