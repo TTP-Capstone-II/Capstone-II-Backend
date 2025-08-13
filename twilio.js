@@ -19,7 +19,12 @@ const generateTurnToken = async (req, res) => {
     const grant = new twilio.jwt.AccessToken.VideoGrant();
     token.addGrant(grant);
 
-    res.json({ token: token.toJwt() });
+    const iceServers = await client.tokens.create(); // Twilio returns ICE servers here
+
+    res.json({ 
+      token: token.toJwt(),
+      iceServers: iceServers.ice_servers // This is what you pass to RTCPeerConnection
+    });
   } catch (error) {
     console.error('Error generating TURN token:', error);
     res.status(500).json({ error: 'Failed to generate token' });
