@@ -196,7 +196,17 @@ const seed = async () => {
         postId: post2.id,
         userId: hailia.id,
       },
+      {
+        postId: post2.id,
+        userId: darrel.id,
+      },
     ]);
+
+    const postUpdate = await Post.findAll();
+    for (const post of postUpdate) {
+      const count = await Postlikes.count({ where: { postId: post.id } });
+      await post.update({ likes: count });
+    }
 
     //Replylikes
     const replylikes = await Replylikes.bulkCreate([
@@ -208,7 +218,17 @@ const seed = async () => {
         replyId: 2,
         userId: hailia.id,
       },
+      {
+        replyId: 1,
+        userId: hailia.id,
+      },
     ]);
+
+    const replyUpdate = await Reply.findAll();
+    for (const reply of replyUpdate) {
+      const count = await Replylikes.count({ where: { replyId: reply.id } });
+      await reply.update({ likes: count });
+    }
 
     //Simulation
     const simulation = await Simulation.bulkCreate([

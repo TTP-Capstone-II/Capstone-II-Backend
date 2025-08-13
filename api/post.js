@@ -63,6 +63,7 @@ router.post("/:postId/reply", async (req, res) => {
         res.status(500).send("Error from the post new reply route");
     }
 })
+
 // Get all replies from a post
 router.get('/:postId/reply', async (req, res) => {
   const { postId } = req.params;
