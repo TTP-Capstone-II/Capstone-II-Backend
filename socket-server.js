@@ -74,8 +74,9 @@ const initSocketServer = (server) => {
 
       socket.on("clear-canvas", (roomId) => {
         console.log(`Clearing canvas in room ${roomId}`);
+        const username = roomUsers[roomId]?.find(u => u.userId === socket.id)?.username || "Unknown";
         roomDrawings[roomId] = [];
-        socket.in(roomId).emit("clear-canvas");
+        socket.in(roomId).emit("clear-canvas", username);
       }
       );
 
