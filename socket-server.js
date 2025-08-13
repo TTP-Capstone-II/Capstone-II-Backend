@@ -17,6 +17,8 @@ const initSocketServer = (server) => {
   try {
     io = new Server(server, corsOptions);
 
+    const roomDrawings = {}; 
+
     io.on("connection", (socket) => {
       console.log(`🔗 User ${socket.id} connected to sockets`);
 
