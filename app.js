@@ -29,9 +29,11 @@ app.use(cookieParser());
 
 app.use(morgan("dev")); // logging middleware
 app.use(express.static(path.join(__dirname, "public"))); // serve static files from public folder
+
+app.get("/api/turn-token", generateTurnToken);
 app.use("/api", apiRouter); // mount api router
 app.use("/auth", authRouter); // mount auth router
-app.get("/api/turn-token", generateTurnToken);
+
 
 // error handling middleware
 app.use((err, req, res, next) => {
