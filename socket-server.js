@@ -50,6 +50,7 @@ const initSocketServer = (server) => {
         socket.in(roomId).emit("draw", line);
       });
 
+
       socket.on("voice-offer", ({ offer, to }) => {
           io.to(to).emit("voice-offer", { offer, from: socket.id });
         });
@@ -62,6 +63,7 @@ const initSocketServer = (server) => {
         io.to(to).emit("new-ice-candidate", { candidate, from: socket.id });
       });
 
+      /*
       socket.on("voice-join", ({roomId}) => {
         console.log(`📥 User ${socket.id} joined voice room ${roomId}`);
         
@@ -87,7 +89,7 @@ const initSocketServer = (server) => {
           
         // Remove the user from the voice room
         socket.leave(`voice-${roomId}`);
-      });
+      });*/
 });
   } catch (error) {
     console.error("❌ Error initializing socket server:");
