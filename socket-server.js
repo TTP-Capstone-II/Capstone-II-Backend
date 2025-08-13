@@ -50,27 +50,43 @@ const initSocketServer = (server) => {
         socket.in(roomId).emit("draw", line);
       });
 
-socket.on("voice-offer", ({ offer, to }) => {
-    io.to(to).emit("voice-offer", { offer, from: socket.id });
-  });
+      socket.on("voice-offer", ({ offer, to }) => {
+          io.to(to).emit("voice-offer", { offer, from: socket.id });
+        });
 
-  socket.on("voice-answer", ({ answer, to }) => {
-    io.to(to).emit("voice-answer", { answer, from: socket.id });
-  });
+      socket.on("voice-answer", ({ answer, to }) => {
+        io.to(to).emit("voice-answer", { answer, from: socket.id });
+      });
 
-  socket.on("new-ice-candidate", ({ candidate, to }) => {
-    io.to(to).emit("new-ice-candidate", { candidate, from: socket.id });
-  });
+      socket.on("new-ice-candidate", ({ candidate, to }) => {
+        io.to(to).emit("new-ice-candidate", { candidate, from: socket.id });
+      });
 
-   socket.on("voice-join", ({roomId}) => {
+      socket.on("voice-join", ({roomId}) => {
         console.log(`📥 User ${socket.id} joined voice room ${roomId}`);
-      });
-
-    socket.on("voice-leave", ({roomId}) => {
-        console.log(`📤 User ${socket.id} left voice room ${roomId}`);
-      });
       
+      
+      socket.to(roomId).emit("voice-user-joined", { 
+          userId: socket.id, 
+          username: socket.username || "Anonymous" 
+        });
+        
+        // Store the user in the voice room
+      socket.join(`voice-${roomId}`);
     });
+  
+      socket.on("voice-leave", ({roomId}) => {
+        console.log(`📤 User ${socket.id} left voice room ${roomId}`);
+          
+        // Notify other users in the voice room
+        socket.to(roomId).emit("voice-user-left", { 
+              userId: socket.id 
+        });
+          
+        // Remove the user from the voice room
+        socket.leave(`voice-${roomId}`);
+      });
+});
   } catch (error) {
     console.error("❌ Error initializing socket server:");
     console.error(error);
