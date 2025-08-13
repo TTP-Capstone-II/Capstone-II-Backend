@@ -18,16 +18,21 @@ const initSocketServer = (server) => {
     io = new Server(server, corsOptions);
 
     const roomDrawings = {}; 
+    const roomUsers = {};
 
     io.on("connection", (socket) => {
       console.log(`🔗 User ${socket.id} connected to sockets`);
 
       socket.on("disconnect", () => {
         console.log(`🔗 User ${socket.id} disconnected from sockets`);
+        if (socket.roomId) {
+          roomUsers[socket.roomId] = roomUsers[socket.roomId]?.filter(u => u.userId !== socket.id) || [];
+          io.to(socket.roomId).emit("update-user-list", roomUsers[socket.roomId]);
+        }
       });
 
       // User joins a room
-      socket.on("join-room", ({ roomId, username }) => {
+      socket.on("join-room", ({ roomId, username, penColor}) => {
         socket.join(roomId);
         console.log(`📥 User ${socket.id} joined room ${roomId}`);
         socket.to(roomId).emit("user-joined", username);
@@ -38,6 +43,24 @@ const initSocketServer = (server) => {
             socket.emit("draw", line);
           });
         }
+
+        // Manage user list
+        socket.roomId = roomId;
+        if (!roomUsers[roomId]) roomUsers[roomId] = [];
+        roomUsers[roomId].push({ userId: socket.id, username, penColor});
+
+        // Update user list for all clients in the room
+        io.to(roomId).emit("update-user-list", roomUsers[roomId]);
+
+      });
+
+      socket.on("pen-color-change", ({ userId, penColor }) => {
+        const roomId = socket.roomId;
+        if (!roomId) return;
+        roomUsers[roomId] = roomUsers[roomId].map(u =>
+          u.userId === userId ? { ...u, penColor } : u
+        );
+        io.to(roomId).emit("update-user-list", roomUsers[roomId]);
       });
 
       // Receive drawing data and broadcast to other clients in the room
