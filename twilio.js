@@ -6,11 +6,13 @@ const client = twilio(accountSid, authToken);
 
 const generateTurnToken = async (req, res) => {
   try {
+    const identity = req.query.identity || "guest-" + Date.now();
+
     const token = new twilio.jwt.AccessToken(
       accountSid,
       process.env.TWILIO_API_KEY,
       process.env.TWILIO_API_SECRET,
-      { ttl: 3600 } 
+      { ttl: 3600,  identity } 
     );
 
     // Add TURN grant
