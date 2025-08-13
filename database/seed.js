@@ -44,11 +44,11 @@ const seed = async () => {
     // FORUMS
     const forums = await Forum.bulkCreate(
       [
-        { name: "Projectile Motion" },
-        { name: "Friction" },
-        { name: "Free Fall" },
-        { name: "Torque" },
-        { name: "Inertia" },
+        { name: "Projectile Motion", description: "Discussions about scenarios where an object moves in a bilaterally symmetrical, parabolic path." },
+        { name: "Friction", description: "Discussions about scenarios where the force that resists the relative motion of solid surfaces, fluid layers, and material elements are sliding against each other." },
+        { name: "Free Fall", description: "Discussions about scenarios where any motion of an object where gravity is the only force acting upon it.." },
+        { name: "Torque", description: "Discussions about scenarios where rotational force applied to an object causes it to rotate around an axis." },
+        { name: "Inertia", description: "Discussions about scenarios where an object resists changes to its current state of motion." },
       ],
       { returning: true }
     );
@@ -108,6 +108,12 @@ const seed = async () => {
     );
 
     const [post1, post2, post3, post4, post5, post6] = posts;
+
+    const forumUpdate = await Forum.findAll();
+    for (const forum of forumUpdate) {
+      const count = await Post.count({ where: { forumId: forum.id } });
+      await forum.update({ numOfPosts: count });
+    }
 
     // REPLIES
     const replies = await Reply.bulkCreate([
