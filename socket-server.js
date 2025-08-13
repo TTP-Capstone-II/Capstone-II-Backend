@@ -64,16 +64,18 @@ const initSocketServer = (server) => {
 
       socket.on("voice-join", ({roomId}) => {
         console.log(`📥 User ${socket.id} joined voice room ${roomId}`);
-      
-      
-      socket.to(roomId).emit("voice-user-joined", { 
+        
+        // Get username from the room data or use socket ID as fallback
+        const username = socket.username || socket.id;
+        
+        socket.to(roomId).emit("voice-user-joined", { 
           userId: socket.id, 
-          username: socket.username || "Anonymous" 
+          username: username
         });
         
         // Store the user in the voice room
-      socket.join(`voice-${roomId}`);
-    });
+        socket.join(`voice-${roomId}`);
+      });
   
       socket.on("voice-leave", ({roomId}) => {
         console.log(`📤 User ${socket.id} left voice room ${roomId}`);
