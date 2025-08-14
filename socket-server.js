@@ -63,33 +63,6 @@ const initSocketServer = (server) => {
         io.to(to).emit("new-ice-candidate", { candidate, from: socket.id });
       });
 
-      /*
-      socket.on("voice-join", ({roomId}) => {
-        console.log(`📥 User ${socket.id} joined voice room ${roomId}`);
-        
-        // Get username from the room data or use socket ID as fallback
-        const username = socket.username || socket.id;
-        
-        socket.to(roomId).emit("voice-user-joined", { 
-          userId: socket.id, 
-          username: username
-        });
-        
-        // Store the user in the voice room
-        socket.join(`voice-${roomId}`);
-      });
-  
-      socket.on("voice-leave", ({roomId}) => {
-        console.log(`📤 User ${socket.id} left voice room ${roomId}`);
-          
-        // Notify other users in the voice room
-        socket.to(roomId).emit("voice-user-left", { 
-              userId: socket.id 
-        });
-          
-        // Remove the user from the voice room
-        socket.leave(`voice-${roomId}`);
-      });*/
 });
   } catch (error) {
     console.error("❌ Error initializing socket server:");
