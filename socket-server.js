@@ -26,6 +26,8 @@ const initSocketServer = (server) => {
 
       // User joins a room
       socket.on("join-room", ({ roomId, username }) => {
+        socket.data.roomId = roomId;
+
         if (users[roomId]) {
           const length = users[roomId].length;
           if (length == 3) {
@@ -57,12 +59,9 @@ const initSocketServer = (server) => {
       });
 
       // Receive drawing data and broadcast to other clients in the room
-      socket.on("draw", ({ roomId, line }) => {
-        console.log(`Draw in room ${roomId}`);
-        if (!users[roomId] || !users[roomId].includes(socket.id)) {
-          console.warn(`Blocked user ${socket.id} in room ${roomId} from drawing`);
-          return;
-        }
+      socket.on("draw", ({ line }) => {
+        const roomId = socket.data.roomId;
+        if (!roomId || !users[roomId]?.includes(socket.id)) return;
         if (!roomDrawings[roomId]) roomDrawings[roomId] = [];
         roomDrawings[roomId].push(line);
 
