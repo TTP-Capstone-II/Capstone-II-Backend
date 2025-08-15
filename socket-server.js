@@ -55,6 +55,12 @@ const initSocketServer = (server) => {
       });
 
       socket.on("disconnect", () => {
+        const roomId = socket.data.roomId;
+        let room = users[roomId];
+        if (room) {
+          room = room.filter(id => id !== socket.id);
+          users[roomId] = room;
+        }
         console.log(`🔗 User ${socket.id} disconnected from sockets`);
       });
 
