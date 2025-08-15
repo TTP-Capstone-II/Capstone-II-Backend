@@ -54,8 +54,7 @@ const initSocketServer = (server) => {
         socket.join(`post_${postId}`);
       });
       socket.on("new-reply", (reply) => {
-        const roomName = `post_${reply.postId}`;
-        socket.to(roomName).emit("new-reply", reply);
+        io.to(reply.room).emit("reply-added", reply);
       });
     });
   } catch (error) {
