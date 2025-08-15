@@ -48,6 +48,15 @@ const initSocketServer = (server) => {
 
         socket.in(roomId).emit("draw", line);
       });
+
+      // Real time post updates
+      socket.on("join-post", ({ postId }) => {
+        socket.join(`post_${postId}`);
+      });
+      socket.on("new-reply", (reply) => {
+        const roomName = `post_${reply.postId}`;
+        socket.to(roomName).emit("new-reply", reply);
+      });
     });
   } catch (error) {
     console.error("❌ Error initializing socket server:");
@@ -55,4 +64,6 @@ const initSocketServer = (server) => {
   }
 };
 
-module.exports = initSocketServer;
+const getIO = () => io;
+
+module.exports = { initSocketServer, getIO };

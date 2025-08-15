@@ -9,7 +9,7 @@ const apiRouter = require("./api");
 const { router: authRouter } = require("./auth");
 const { db } = require("./database");
 const cors = require("cors");
-const initSocketServer = require("./socket-server");
+const { initSocketServer } = require("./socket-server");
 const PORT = process.env.PORT || 8080;
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { getIO } = require("../socket-server");
 const {Forum, Post, Reply, User} = require('../database');
 
 //Get all posts
@@ -41,6 +42,9 @@ router.post("/:postId/reply", async (req, res) => {
             likes,
             parentId: parentId || null
         });
+
+        const io = getIO();
+        io.to(`post_${postId}`).emit("new-reply", newReply);
 
         res.status(201).json(newReply);
     } catch (error) {
