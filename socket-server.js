@@ -19,20 +19,31 @@ const initSocketServer = (server) => {
     io = new Server(server, corsOptions);
 
     const roomDrawings = {};
+    const users = {};
 
     io.on("connection", (socket) => {
       console.log(`🔗 User ${socket.id} connected to sockets`);
 
-      socket.on("disconnect", () => {
-        console.log(`🔗 User ${socket.id} disconnected from sockets`);
-      });
-
       // User joins a room
       socket.on("join-room", ({ roomId, username }) => {
+        if (users[roomId]) {
+          const length = users[roomId].length;
+          if (length == 3) {
+            socket.emit("room full");
+            return;
+          }
+          users[roomId].push(socket.id);          
+        } else {
+          users[roomId] = [socket.id];
+        }
         socket.join(roomId);
         console.log(`📥 User ${socket.id} joined room ${roomId}`);
-        socket.to(roomId).emit("user-joined", {id: socket.id, username});
 
+        const usersInThisRoom = users[roomId].filter(id => id !== socket.id); // filter for other users
+        socket.to(roomId).emit("user-joined", {id: socket.id, username}); // maybe delete later
+        socket.emit("all users", usersInThisRoom);
+        console.log("users:", usersInThisRoom);
+        
         // Send existing drawings to new client
         if (roomDrawings[roomId]) {
           roomDrawings[roomId].forEach((line) => {
@@ -41,9 +52,17 @@ const initSocketServer = (server) => {
         }
       });
 
+      socket.on("disconnect", () => {
+        console.log(`🔗 User ${socket.id} disconnected from sockets`);
+      });
+
       // Receive drawing data and broadcast to other clients in the room
       socket.on("draw", ({ roomId, line }) => {
         console.log(`Draw in room ${roomId}`);
+        if (!users[roomId] || !users[roomId].includes(socket.id)) {
+          console.warn(`Blocked user ${socket.id} in room ${roomId} from drawing`);
+          return;
+        }
         if (!roomDrawings[roomId]) roomDrawings[roomId] = [];
         roomDrawings[roomId].push(line);
 
