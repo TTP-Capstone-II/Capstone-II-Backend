@@ -26,7 +26,6 @@ const generateTurnToken = async (req, res) => {
     const tokenInstance = await client.tokens.create(); 
 
     res.json({ 
-      token: token.toJwt(),
       iceServers: tokenInstance.iceServers,
     });
   } catch (error) {

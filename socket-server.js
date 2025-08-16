@@ -23,9 +23,10 @@ const initSocketServer = (server) => {
 
     io.on("connection", (socket) => {
       console.log(`🔗 User ${socket.id} connected to sockets`);
-      socket.emit("my-socket-id", { id: socket.id });
+      
       // User joins a room
       socket.on("join-room", ({ roomId, username }) => {
+        socket.emit("my-socket-id", { id: socket.id });
         socket.data.roomId = roomId;
 
         if (users[roomId]) {
@@ -72,6 +73,14 @@ const initSocketServer = (server) => {
         roomDrawings[roomId].push(line);
 
         socket.in(roomId).emit("draw", line);
+      });
+
+       // User joins voice
+      socket.on("voice-join", ({ roomId }) => {
+        // Notify all other users in the room that a new user joined
+        socket.to(roomId).emit("voice-user-joined", { socketId: socket.id });
+
+        console.log(`User ${socket.id} joined voice room ${roomId}`);
       });
 
 
