@@ -23,7 +23,7 @@ const initSocketServer = (server) => {
 
     io.on("connection", (socket) => {
       console.log(`🔗 User ${socket.id} connected to sockets`);
-
+      socket.emit("my-socket-id", { id: socket.id });
       // User joins a room
       socket.on("join-room", ({ roomId, username }) => {
         socket.data.roomId = roomId;
