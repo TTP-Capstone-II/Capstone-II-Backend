@@ -10,7 +10,7 @@ const User = db.define("user", {
   },
   passwordHash: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   auth0Id: {
     type: DataTypes.STRING,
