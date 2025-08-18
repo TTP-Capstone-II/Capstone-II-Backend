@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { getIO } = require("../socket-server");
 const {Forum, Post, Reply, User} = require('../database');
 
 //Get all posts
@@ -29,21 +30,6 @@ router.get("/:id", async (req, res) => {
     }
 });
 
-router.delete("/:postId", async (req, res) => {
-    try{
-        const post = await Post.findByPk(req.params.postId);
-        if (!post) {
-            return res.status(404).send("Post not found");
-        }
-
-        await post.destroy();
-        res.status(200).send("Post deleted successfully");
-    } catch (error) {
-        console.error(error);
-        res.status(500).send("Error from the delete existing post route");
-    }
-});
-
 //POST a reply
 router.post("/:postId/reply", async (req, res) => {
     const {postId} = req.params;
@@ -56,6 +42,9 @@ router.post("/:postId/reply", async (req, res) => {
             likes,
             parentId: parentId || null
         });
+
+        const io = getIO();
+        io.to(`post_${postId}`).emit("new-reply", newReply);
 
         res.status(201).json(newReply);
     } catch (error) {

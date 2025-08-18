@@ -90,6 +90,15 @@ const initSocketServer = (server) => {
         io.to(to).emit("voice-answer", { answer, from: socket.id });
       });
 
+      // Real time post updates
+      socket.on("join-post", ({ postId }) => {
+        socket.join(`post_${postId}`);
+      });
+      socket.on("new-reply", (reply) => {
+        io.to(reply.room).emit("reply-added", reply);
+      });
+    });
+
       socket.on("new-ice-candidate", ({ candidate, to }) => {
         io.to(to).emit("new-ice-candidate", { candidate, from: socket.id });
       });
@@ -116,8 +125,6 @@ const initSocketServer = (server) => {
   }
 };
 
+const getIO = () => io;
 
-module.exports = initSocketServer;
-
-
-
+module.exports = { initSocketServer, getIO };
