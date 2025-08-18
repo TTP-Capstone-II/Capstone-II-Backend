@@ -35,7 +35,7 @@ router.get('/:forumId/posts', async (req, res) => {
   });
 
 //Create a new post in a forum
-router.post('/:forumId/post/', async(req, res) => {
+router.post('/:forumId/posts', async(req, res) => {
   const { forumId } = req.params;
   try {
     const { title, content, userId, likes = 0 } = req.body;

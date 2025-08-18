@@ -48,12 +48,13 @@ router.delete("/:postId", async (req, res) => {
 router.post("/:postId/reply", async (req, res) => {
     const {postId} = req.params;
     try {
-        const { content, userId, postId, likes = 0 } = req.body;
+        const { content, userId, postId, likes = 0, parentId } = req.body;
         const newReply = await Reply.create({
             content,
             userId, 
             postId: postId,
             likes,
+            parentId: parentId || null
         });
 
         res.status(201).json(newReply);
@@ -62,6 +63,7 @@ router.post("/:postId/reply", async (req, res) => {
         res.status(500).send("Error from the post new reply route");
     }
 })
+
 // Get all replies from a post
 router.get('/:postId/reply', async (req, res) => {
   const { postId } = req.params;
@@ -69,10 +71,38 @@ router.get('/:postId/reply', async (req, res) => {
   try { 
     const replies = await Reply.findAll({
         where: { postId },
-        include: [{ model: User, attributes: ['username'] }],
-        order: [['createdAt', 'DESC']],
+        include: [{ model: User, attributes: ['username'] }]
       });
-      res.json(replies);
+
+      const replyMap = {};
+      replies.forEach(reply => {
+        reply.dataValues.childReplies = [];
+        replyMap[reply.id] = reply;
+      });
+
+      const rootReplies = [];
+      replies.forEach(reply => {
+        if(reply.parentId) {
+            const parent = replyMap[reply.parentId];
+            if (parent) {
+                parent.dataValues.childReplies.push(reply);
+            }
+        } else {
+            rootReplies.push(reply);
+        }
+      });
+
+      rootReplies.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      const sortChildrenAsc = (reply) => {
+        reply.dataValues.childReplies.sort(
+            (a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            reply.dataValues.childReplies.forEach(sortChildrenAsc);
+      };
+      rootReplies.forEach(sortChildrenAsc);
+
+      res.json(rootReplies);
+
   } catch (err) {
     console.error('Error fetching replies:', err);
     res.status(500).json({ error: 'Failed to fetch replies for this post.' });

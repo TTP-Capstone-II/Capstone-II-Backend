@@ -1,6 +1,8 @@
 const { Server } = require("socket.io");
 
+
 let io;
+
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 const corsOptions =
@@ -15,37 +17,36 @@ const corsOptions =
       };
 
 const initSocketServer = (server) => {
-  try {
-    io = new Server(server, corsOptions);
+ try {
+   io = new Server(server, corsOptions);
 
     const roomDrawings = {};
-    const users = {};
+    const roomUsers = {};
 
     io.on("connection", (socket) => {
       console.log(`🔗 User ${socket.id} connected to sockets`);
       
       // User joins a room
-      socket.on("join-room", ({ roomId, username }) => {
+      socket.on("join-room", ({ roomId, username, penColor}) => {
         socket.emit("my-socket-id", { id: socket.id });
         socket.data.roomId = roomId;
 
-        if (users[roomId]) {
-          const length = users[roomId].length;
+       // Check if user is in room
+        if (roomUsers[roomId]) {
+          const length = roomUsers[roomId].length;
+           // Check if room is full
           if (length == 3) {
             socket.emit("room full");
             return;
           }
-          users[roomId].push(socket.id);          
+          roomUsers[roomId].push({userId: socket.id, username, penColor});          
         } else {
-          users[roomId] = [socket.id];
+          roomUsers[roomId] = [{userId: socket.id, username, penColor}];
         }
         socket.join(roomId);
         console.log(`📥 User ${socket.id} joined room ${roomId}`);
 
-        const usersInThisRoom = users[roomId].filter(id => id !== socket.id); // filter for other users
         socket.to(roomId).emit("user-joined", {id: socket.id, username}); // maybe delete later
-        socket.emit("all users", usersInThisRoom);
-        console.log("users:", usersInThisRoom);
         
         // Send existing drawings to new client
         if (roomDrawings[roomId]) {
@@ -53,36 +54,33 @@ const initSocketServer = (server) => {
             socket.emit("draw", line);
           });
         }
+
+       // Update user list for all clients in the room
+       io.to(roomId).emit("update-user-list", roomUsers[roomId]);
+       console.log(roomUsers)
       });
 
-      socket.on("disconnect", () => {
-        const roomId = socket.data.roomId;
-        let room = users[roomId];
-        if (room) {
-          room = room.filter(id => id !== socket.id);
-          users[roomId] = room;
-        }
-        console.log(`🔗 User ${socket.id} disconnected from sockets`);
-      });
+        socket.on("disconnect", () => {
+       console.log(`🔗 User ${socket.id} disconnected from sockets`);
+       if (socket.data.roomId) {
+         roomUsers[socket.data.roomId] = roomUsers[socket.data.roomId]?.filter(u => u.userId !== socket.id) || [];
+         io.to(socket.data.roomId).emit("update-user-list", roomUsers[socket.data.roomId]);
+       }
+     });
 
-      // Receive drawing data and broadcast to other clients in the room
-      socket.on("draw", ({ line }) => {
-        const roomId = socket.data.roomId;
-        if (!roomId || !users[roomId]?.includes(socket.id)) return;
-        if (!roomDrawings[roomId]) roomDrawings[roomId] = [];
-        roomDrawings[roomId].push(line);
-
-        socket.in(roomId).emit("draw", line);
-      });
+    // Receive drawing data and broadcast to other clients in the room
+     socket.on("draw", ({ roomId, line }) => {
+       console.log(`Draw in room ${roomId}`);
+       if (!roomDrawings[roomId]) roomDrawings[roomId] = [];
+       roomDrawings[roomId].push(line);
+       socket.in(roomId).emit("draw", line);
+     });
 
        // User joins voice
       socket.on("voice-join", ({ roomId }) => {
         // Notify all other users in the room that a new user joined
         socket.to(roomId).emit("voice-user-joined", { socketId: socket.id });
-
-        console.log(`User ${socket.id} joined voice room ${roomId}`);
       });
-
 
       socket.on("voice-offer", ({ offer, to }) => {
           io.to(to).emit("voice-offer", { offer, from: socket.id });
@@ -96,6 +94,21 @@ const initSocketServer = (server) => {
         io.to(to).emit("new-ice-candidate", { candidate, from: socket.id });
       });
 
+      socket.on("clear-canvas", (roomId) => {
+       console.log(`Clearing canvas in room ${roomId}`);
+       const username = roomUsers[roomId]?.find(u => u.userId === socket.id)?.username || "Unknown";
+       roomDrawings[roomId] = [];
+       socket.in(roomId).emit("clear-canvas", username);
+     });
+
+      socket.on("pen-color-change", ({ userId, penColor }) => {
+       const roomId = socket.roomId;
+       if (!roomId) return;
+       roomUsers[roomId] = roomUsers[roomId].map(u =>
+         u.userId === userId ? { ...u, penColor } : u
+       );
+       io.to(roomId).emit("update-user-list", roomUsers[roomId]);
+     });
 });
   } catch (error) {
     console.error("❌ Error initializing socket server:");
@@ -103,4 +116,8 @@ const initSocketServer = (server) => {
   }
 };
 
+
 module.exports = initSocketServer;
+
+
+

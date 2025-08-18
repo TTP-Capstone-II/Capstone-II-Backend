@@ -36,7 +36,6 @@ router.post("/:replyId/like/:userId", async (req, res) => {
 
     await Replylikes.create({ userId, replyId });
 
-    // Optional: increment reply.likes
     await Reply.increment("likes", { where: { id: replyId } });
 
     res.status(201).json({ message: "Reply liked" });

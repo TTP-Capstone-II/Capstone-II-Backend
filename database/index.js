@@ -12,10 +12,6 @@ Simulation.belongsTo(User, { foreignKey: "userId" }); //A simulation belongs to 
 
 User.hasMany(Simulation, { foreignKey: "userId" }); //A user can have many simulations
 
-Simulation.belongsTo(Forum, { foreignKey: "forumId"}); //Simulations pertain to one topic(forum is considered topic)
-
-Forum.hasMany(Simulation, { foreignKey: "forumId"}); //Same as above
-
 Forum.hasMany(Post, { foreignKey: "forumId" }); // A forum can have many posts
 
 Post.belongsTo(Forum, { foreignKey: "forumId" }); // A post belongs to a forum
