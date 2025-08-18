@@ -9,7 +9,9 @@ const apiRouter = require("./api");
 const { router: authRouter } = require("./auth");
 const { db } = require("./database");
 const cors = require("cors");
+
 const { initSocketServer } = require("./socket-server");
+const { generateTurnToken } = require("./twilio");
 const PORT = process.env.PORT || 8080;
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
@@ -28,8 +30,11 @@ app.use(cookieParser());
 
 app.use(morgan("dev")); // logging middleware
 app.use(express.static(path.join(__dirname, "public"))); // serve static files from public folder
+
+app.get("/api/turn-token", generateTurnToken);
 app.use("/api", apiRouter); // mount api router
 app.use("/auth", authRouter); // mount auth router
+
 
 // error handling middleware
 app.use((err, req, res, next) => {

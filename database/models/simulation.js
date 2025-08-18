@@ -6,13 +6,17 @@ const Simulation = db.define("Simulation", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  forumId: {
-    type: DataTypes.INTEGER,
+  forumTitle: {
+    type: DataTypes.TEXT,
     allowNull: false,
+  },
+  topic: {
+    type: DataTypes.TEXT,
+    allowNull:false
   },
   storedValues: {
     type: DataTypes.TEXT,
-    allownull:false,
+    allowNull:false,
   },
 });
 
