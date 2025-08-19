@@ -12,11 +12,15 @@ const cors = require("cors");
 
 const { initSocketServer } = require("./socket-server");
 const { generateTurnToken } = require("./twilio");
+const cloudinary = require("./cloudinary");
 const PORT = process.env.PORT || 8080;
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
 // body parser middleware
-app.use(express.json());
+app.use(
+  express.json({
+    limit: "20mb",
+}));
 
 app.use(
   cors({
@@ -32,6 +36,18 @@ app.use(morgan("dev")); // logging middleware
 app.use(express.static(path.join(__dirname, "public"))); // serve static files from public folder
 
 app.get("/api/turn-token", generateTurnToken);
+app.post("/api/upload", async (req, res, next) => {
+  try {
+    const image_url = req.body.image_url;
+    
+    const cloudinary_res = await cloudinary.uploader.upload(image_url, {
+      folder:"/capstone-ii", 
+    })
+  }
+  catch (error) {
+      console.error(error);
+  }
+})
 app.use("/api", apiRouter); // mount api router
 app.use("/auth", authRouter); // mount auth router
 
