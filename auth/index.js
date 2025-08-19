@@ -84,6 +84,7 @@ router.post("/auth0-login", async (req, res) => {
         username: user.username,
         auth0Id: user.auth0Id,
         email: user.email,
+        profile_image: user.profile_image,
       },
       JWT_SECRET,
       { expiresIn: "24h" }
@@ -98,6 +99,7 @@ router.post("/auth0-login", async (req, res) => {
         username: user.username,
         auth0Id: user.auth0Id,
         email: user.email,
+        profile_image: user.profile_image,
       },
     });
   } catch (error) {
@@ -142,6 +144,7 @@ router.post("/signup", async (req, res) => {
         username: user.username,
         auth0Id: user.auth0Id,
         email: user.email,
+        profile_image: user.profile_image,
       },
       JWT_SECRET,
       { expiresIn: "24h" }
@@ -151,7 +154,7 @@ router.post("/signup", async (req, res) => {
 
     res.send({
       message: "User created successfully",
-      user: { id: user.id, username: user.username },
+      user: { id: user.id, username: user.username, profile_image: user.profile_image },
     });
   } catch (error) {
     console.error("Signup error:", error);
@@ -188,6 +191,7 @@ router.post("/login", async (req, res) => {
         username: user.username,
         auth0Id: user.auth0Id,
         email: user.email,
+        profile_image: user.profile_image,
       },
       JWT_SECRET,
       { expiresIn: "24h" }
@@ -197,7 +201,7 @@ router.post("/login", async (req, res) => {
 
     res.send({
       message: "Login successful",
-      user: { id: user.id, username: user.username },
+      user: { id: user.id, username: user.username, profile_image: user.profile_image },
     });
   } catch (error) {
     console.error("Login error:", error);
