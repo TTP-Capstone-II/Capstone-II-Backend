@@ -19,7 +19,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 // body parser middleware
 app.use(
   express.json({
-    limit: "20mb",
+    limit: "2mb",
 }));
 
 app.use(
@@ -39,10 +39,20 @@ app.get("/api/turn-token", generateTurnToken);
 app.post("/api/upload", async (req, res, next) => {
   try {
     const image_url = req.body.image_url;
+
+    if (!image_url) {
+      return res.status(400).json({ error: "No image provided" });
+    }
     
     const cloudinary_res = await cloudinary.uploader.upload(image_url, {
       folder:"/capstone-ii", 
     })
+
+    res.json({
+      success: true,
+      url: cloudinary_res.secure_url,
+      public_id: cloudinary_res.public_id,
+    });
   }
   catch (error) {
       console.error(error);
