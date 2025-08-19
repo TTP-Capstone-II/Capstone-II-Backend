@@ -118,7 +118,6 @@ const initSocketServer = (server) => {
        );
        io.to(roomId).emit("update-user-list", roomUsers[roomId]);
      });
-});
   } catch (error) {
     console.error("❌ Error initializing socket server:");
     console.error(error);
