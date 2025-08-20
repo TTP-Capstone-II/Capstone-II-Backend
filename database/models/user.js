@@ -35,6 +35,10 @@ const User = db.define("user", {
     allowNull: false,
     defaultValue: false,
   },
+  profile_image: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 // Instance method to check password
 User.prototype.checkPassword = function (password) {
