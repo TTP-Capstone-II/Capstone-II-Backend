@@ -33,7 +33,7 @@ const authenticateJWT = (req, res, next) => {
 // Auth0 authentication route
 router.post("/auth0-login", async (req, res) => {
   try {
-    const { auth0Id, email, username } = req.body;
+    const { auth0Id, email, username, profile_image } = req.body;
 
     if (!auth0Id) {
       return res.status(400).send({ error: "Auth0 ID is required" });
@@ -74,6 +74,7 @@ router.post("/auth0-login", async (req, res) => {
         email: email || null,
         username: finalUsername,
         passwordHash: null, // no password for auth0 users
+        profile_image: profile_image || null,
       });
     }
 
